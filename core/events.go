@@ -254,6 +254,20 @@ type CollectionsImportEvent struct {
 }
 
 // -------------------------------------------------------------------
+// Projects API events data
+// -------------------------------------------------------------------
+type ProjectsListEvent struct {
+	HttpContext echo.Context
+	Project []*models.Project
+	Result      *search.Result
+}
+
+type ProjectCreateEvent struct {
+	HttpContext echo.Context
+	Project  *models.Project
+}
+
+// -------------------------------------------------------------------
 // File API events data
 // -------------------------------------------------------------------
 

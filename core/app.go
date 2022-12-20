@@ -510,4 +510,25 @@ type App interface {
 	// OnCollectionsAfterImportRequest hook is triggered after each
 	// successful API collections import request.
 	OnCollectionsAfterImportRequest() *hook.Hook[*CollectionsImportEvent]
+
+
+	// ---------------------------------------------------------------
+	// Project API event hooks
+	// ---------------------------------------------------------------
+
+	// OnProjectListRequest hook is triggered on each API Collections list request.
+	//
+	// Could be used to validate or modify the response before returning it to the client.
+	OnProjectsListRequest() *hook.Hook[*ProjectsListEvent]
+
+	// OnProjectBeforeCreateRequest hook is triggered before each API Collection
+	// create request (after request data load and before model persistence).
+	//
+	// Could be used to additionally validate the request data or implement
+	// completely different persistence behavior (returning [hook.StopPropagation]).
+	OnProjectBeforeCreateRequest() *hook.Hook[*ProjectCreateEvent]
+
+	// OnProjectAfterCreateRequest hook is triggered after each
+	// successful API Collection create request.
+	OnProjectAfterCreateRequest() *hook.Hook[*ProjectCreateEvent]
 }

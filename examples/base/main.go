@@ -28,6 +28,10 @@ func main() {
 		"the directory with the user defined migrations",
 	)
 
+	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
+        Automigrate: true, // auto creates migration files when making collection changes
+    })
+
 	var automigrate bool
 	app.RootCmd.PersistentFlags().BoolVar(
 		&automigrate,

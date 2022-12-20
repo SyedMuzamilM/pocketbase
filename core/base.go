@@ -139,6 +139,11 @@ type BaseApp struct {
 	onCollectionAfterDeleteRequest   *hook.Hook[*CollectionDeleteEvent]
 	onCollectionsBeforeImportRequest *hook.Hook[*CollectionsImportEvent]
 	onCollectionsAfterImportRequest  *hook.Hook[*CollectionsImportEvent]
+
+	// project API event hooks
+	onProjectsListRequest *hook.Hook[*ProjectsListEvent]
+	onProjectBeforeCreateRequest *hook.Hook[*ProjectCreateEvent]
+	onProjectAfterCreateRequest *hook.Hook[*ProjectCreateEvent]
 }
 
 // BaseAppConfig defines a BaseApp configuration option
@@ -260,6 +265,11 @@ func NewBaseApp(config *BaseAppConfig) *BaseApp {
 		onCollectionAfterDeleteRequest:   &hook.Hook[*CollectionDeleteEvent]{},
 		onCollectionsBeforeImportRequest: &hook.Hook[*CollectionsImportEvent]{},
 		onCollectionsAfterImportRequest:  &hook.Hook[*CollectionsImportEvent]{},
+
+		// project API event hooks
+		onProjectsListRequest: &hook.Hook[*ProjectsListEvent]{},
+		onProjectBeforeCreateRequest: &hook.Hook[*ProjectCreateEvent]{},
+		onProjectAfterCreateRequest: &hook.Hook[*ProjectCreateEvent]{},
 	}
 
 	app.registerDefaultHooks()
@@ -810,6 +820,23 @@ func (app *BaseApp) OnCollectionsBeforeImportRequest() *hook.Hook[*CollectionsIm
 
 func (app *BaseApp) OnCollectionsAfterImportRequest() *hook.Hook[*CollectionsImportEvent] {
 	return app.onCollectionsAfterImportRequest
+}
+
+// -------------------------------------------------------------------
+// Project API event hooks
+// -------------------------------------------------------------------
+
+func (app *BaseApp) OnProjectsListRequest() *hook.Hook[*ProjectsListEvent] {
+	return app.onProjectsListRequest
+}
+
+
+func (app *BaseApp) OnProjectBeforeCreateRequest() *hook.Hook[*ProjectCreateEvent] {
+	return app.onProjectBeforeCreateRequest
+}
+
+func (app *BaseApp) OnProjectAfterCreateRequest() *hook.Hook[*ProjectCreateEvent] {
+	return app.onProjectAfterCreateRequest
 }
 
 // -------------------------------------------------------------------

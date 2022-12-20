@@ -12,6 +12,8 @@ coverage.out
 # plaintask todo files
 *.todo
 
+pb_data
+
 # generated markdown previews
 README.html
 CHANGELOG.html

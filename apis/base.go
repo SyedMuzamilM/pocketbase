@@ -87,11 +87,15 @@ func InitApi(app core.App) (*echo.Echo, error) {
 		app.OnAfterApiError().Trigger(event)
 	}
 
+	
 	// admin ui routes
 	bindStaticAdminUI(app, e)
-
+	
 	// default routes
 	api := e.Group("/api")
+	// api := e.Group("/projects/:projectId/api");
+
+	bindProjectApi(app, api)
 	bindSettingsApi(app, api)
 	bindAdminApi(app, api)
 	bindCollectionApi(app, api)

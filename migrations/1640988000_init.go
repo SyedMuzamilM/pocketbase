@@ -46,6 +46,13 @@ func init() {
 				[[updated]]         TEXT DEFAULT "" NOT NULL
 			);
 
+			CREATE TABLE {{_projects}} (
+				[[id]]              TEXT PRIMARY KEY NOT NULL,
+				[[name]]       		TEXT UNIQUE NOT NULL,
+				[[created]]         TEXT DEFAULT "" NOT NULL,
+				[[updated]]         TEXT DEFAULT "" NOT NULL
+			);
+
 			CREATE TABLE {{_collections}} (
 				[[id]]         TEXT PRIMARY KEY NOT NULL,
 				[[system]]     BOOLEAN DEFAULT FALSE NOT NULL,
