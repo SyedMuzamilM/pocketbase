@@ -54,19 +54,20 @@ func init() {
 			);
 
 			CREATE TABLE {{_collections}} (
-				[[id]]         TEXT PRIMARY KEY NOT NULL,
-				[[system]]     BOOLEAN DEFAULT FALSE NOT NULL,
-				[[type]]       TEXT DEFAULT "base" NOT NULL,
-				[[name]]       TEXT UNIQUE NOT NULL,
-				[[schema]]     JSON DEFAULT "[]" NOT NULL,
-				[[listRule]]   TEXT DEFAULT NULL,
-				[[viewRule]]   TEXT DEFAULT NULL,
-				[[createRule]] TEXT DEFAULT NULL,
-				[[updateRule]] TEXT DEFAULT NULL,
-				[[deleteRule]] TEXT DEFAULT NULL,
-				[[options]]    JSON DEFAULT "{}" NOT NULL,
-				[[created]]    TEXT DEFAULT "" NOT NULL,
-				[[updated]]    TEXT DEFAULT "" NOT NULL
+				[[id]]          TEXT PRIMARY KEY NOT NULL,
+				[[system]]      BOOLEAN DEFAULT FALSE NOT NULL,
+				[[type]]        TEXT DEFAULT "base" NOT NULL,
+				[[projectName]] TEXT NOT NULL,
+				[[name]]        TEXT UNIQUE NOT NULL,
+				[[schema]]      JSON DEFAULT "[]" NOT NULL,
+				[[listRule]]    TEXT DEFAULT NULL,
+				[[viewRule]]    TEXT DEFAULT NULL,
+				[[createRule]]  TEXT DEFAULT NULL,
+				[[updateRule]]  TEXT DEFAULT NULL,
+				[[deleteRule]]  TEXT DEFAULT NULL,
+				[[options]]     JSON DEFAULT "{}" NOT NULL,
+				[[created]]     TEXT DEFAULT "" NOT NULL,
+				[[updated]]     TEXT DEFAULT "" NOT NULL
 			);
 
 			CREATE TABLE {{_params}} (

@@ -19,8 +19,11 @@ const (
 	CollectionTypeAuth = "auth"
 )
 
+// Todo: Add the project here so that we can get the collections based on the project
 type Collection struct {
 	BaseModel
+	
+	ProjectName string `db:"projectName" json:"projectName"`
 
 	Name   string        `db:"name" json:"name"`
 	Type   string        `db:"type" json:"type"`
@@ -36,6 +39,13 @@ type Collection struct {
 
 	Options types.JsonMap `db:"options" json:"options"`
 }
+
+// func NewCollection(m *Collection) *Collection {
+// 	return &Collection{
+// 		project: m.project,
+// 		Name: m.Name,
+// 	}
+// }
 
 // TableName returns the Collection model SQL table name.
 func (m *Collection) TableName() string {
