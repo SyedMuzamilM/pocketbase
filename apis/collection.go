@@ -34,9 +34,13 @@ func (api *collectionApi) list(c echo.Context) error {
 
 	collections := []*models.Collection{}
 
+	projectName := c.PathParam("projectName")
+
 	result, err := search.NewProvider(fieldResolver).
-		Query(api.app.Dao().CollectionQuery()).
+		Query(api.app.Dao().FindCollectionByProject(projectName)).
 		ParseAndExec(c.QueryParams().Encode(), &collections)
+
+	// result, err := api.app.Dao().FindCollectionByProject(c.QueryParam("projectName"))
 
 	if err != nil {
 		return NewBadRequestError("", err)
@@ -72,8 +76,11 @@ func (api *collectionApi) view(c echo.Context) error {
 func (api *collectionApi) create(c echo.Context) error {
 	collection := &models.Collection{}
 
-	form := forms.NewCollectionUpsert(api.app, collection)
+	projectName := c.PathParam("projectName")
 
+	form := forms.NewCollectionUpsert(api.app, collection)
+	form.ProjectName = projectName
+	
 	// load request
 	if err := c.Bind(form); err != nil {
 		return NewBadRequestError("Failed to load the submitted data due to invalid formatting.", err)

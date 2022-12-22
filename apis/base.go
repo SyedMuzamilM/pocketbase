@@ -92,8 +92,8 @@ func InitApi(app core.App) (*echo.Echo, error) {
 	bindStaticAdminUI(app, e)
 	
 	// default routes
-	api := e.Group("/api")
-	// api := e.Group("/projects/:projectId/api");
+	// api := e.Group("/api")
+	api := e.Group("/api/projects/:projectName");
 
 	bindProjectApi(app, api)
 	bindSettingsApi(app, api)

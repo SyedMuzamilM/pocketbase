@@ -25,6 +25,7 @@ type CollectionUpsert struct {
 	dao        *daos.Dao
 	collection *models.Collection
 
+	ProjectName string `form:"projectName" json:"projectName"`
 	Id         string        `form:"id" json:"id"`
 	Type       string        `form:"type" json:"type"`
 	Name       string        `form:"name" json:"name"`
@@ -62,6 +63,7 @@ func NewCollectionUpsert(app core.App, collection *models.Collection) *Collectio
 	form.UpdateRule = form.collection.UpdateRule
 	form.DeleteRule = form.collection.DeleteRule
 	form.Options = form.collection.Options
+	form.ProjectName = form.collection.ProjectName
 
 	if form.Type == "" {
 		form.Type = models.CollectionTypeBase
@@ -124,6 +126,11 @@ func (form *CollectionUpsert) Validate() error {
 				isAuth,
 				validation.By(form.ensureNoAuthFieldName),
 			),
+		),
+		validation.Field(
+			&form.ProjectName,
+			validation.NotNil,
+			validation.Required,
 		),
 		validation.Field(&form.ListRule, validation.By(form.checkRule)),
 		validation.Field(&form.ViewRule, validation.By(form.checkRule)),
@@ -354,6 +361,9 @@ func (form *CollectionUpsert) Submit(interceptors ...InterceptorFunc) error {
 
 		// system flag can be set only on create
 		form.collection.System = form.System
+
+		// project name
+		form.collection.ProjectName = form.ProjectName
 
 		// custom insertion id can be set only on create
 		if form.Id != "" {

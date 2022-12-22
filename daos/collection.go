@@ -16,6 +16,13 @@ func (dao *Dao) CollectionQuery() *dbx.SelectQuery {
 	return dao.ModelQuery(&models.Collection{})
 }
 
+func (dao *Dao) FindCollectionByProject(projectName string) *dbx.SelectQuery {
+	return dao.CollectionQuery().
+		AndWhere(dbx.NewExp("[[projectName]] = {:projectName}", dbx.Params{
+			"projectName": projectName,
+		}))
+}
+
 // FindCollectionsByType finds all collections by the given type.
 func (dao *Dao) FindCollectionsByType(collectionType string) ([]*models.Collection, error) {
 	collections := []*models.Collection{}
