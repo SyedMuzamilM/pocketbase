@@ -1,8 +1,6 @@
 package forms
 
 import (
-	"strings"
-
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
@@ -90,28 +88,27 @@ func (form *ProjectUpsert) Validate() error {
 			&form.Name,
 			validation.Required,
 			validation.Length(1, 255),
-			validation.By(form.checkUniqueName),
 		),
 	)
 }
 
-func (form *ProjectUpsert) checkUniqueName(value any) error {
-	v, _ := value.(string)
+// func (form *ProjectUpsert) checkUniqueName(value any) error {
+// 	v, _ := value.(string)
 
-	// ensure unique collection name
-	if !form.dao.IsCollectionNameUnique(v, form.project.Id) {
-		return validation.NewError("validation_collection_name_exists", "Collection name must be unique (case insensitive).")
-	}
+// 	// ensure unique collection name
+// 	if !form.dao.IsCollectionNameUnique(v, form.project.Id) {
+// 		return validation.NewError("validation_collection_name_exists", "Collection name must be unique (case insensitive).")
+// 	}
 
-	// ensure that the collection name doesn't collide with the id of any collection
-	if form.dao.FindById(&models.Collection{}, v) == nil {
-		return validation.NewError("validation_collection_name_id_duplicate", "The name must not match an existing collection id.")
-	}
+// 	// ensure that the collection name doesn't collide with the id of any collection
+// 	if form.dao.FindById(&models.Collection{}, v) == nil {
+// 		return validation.NewError("validation_collection_name_id_duplicate", "The name must not match an existing collection id.")
+// 	}
 
-	// ensure that there is no existing table name with the same name
-	if (form.project.IsNew() || !strings.EqualFold(v, form.project.Name)) && form.dao.HasTable(v) {
-		return validation.NewError("validation_collection_name_table_exists", "The collection name must be also unique table name.")
-	}
+// 	// ensure that there is no existing table name with the same name
+// 	if (form.project.IsNew() || !strings.EqualFold(v, form.project.Name)) && form.dao.HasTable(v) {
+// 		return validation.NewError("validation_collection_name_table_exists", "The collection name must be also unique table name.")
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
