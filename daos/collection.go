@@ -9,6 +9,7 @@ import (
 	"github.com/pocketbase/pocketbase/models"
 	"github.com/pocketbase/pocketbase/models/schema"
 	"github.com/pocketbase/pocketbase/tools/list"
+	"github.com/pocketbase/pocketbase/tools/types"
 )
 
 // CollectionQuery returns a new Collection select query.
@@ -62,14 +63,16 @@ func (dao *Dao) FindCollectionByNameOrId(nameOrId string) (*models.Collection, e
 // with the provided name (case insensitive!).
 //
 // Note: case insensitive check because the name is used also as a table name for the records.
-func (dao *Dao) IsCollectionNameUnique(name string, excludeIds ...string) bool {
-	if name == "" {
+func (dao *Dao) IsCollectionNameUnique(name string, projectName string, excludeIds ...string) bool {
+	if name == "" || projectName == "" {
 		return false
 	}
 
+	tableName := projectName + "_" + name
+
 	query := dao.CollectionQuery().
 		Select("count(*)").
-		AndWhere(dbx.NewExp("LOWER([[name]])={:name}", dbx.Params{"name": strings.ToLower(name)})).
+		AndWhere(dbx.NewExp("LOWER([[tableName]])={:tableName}", dbx.Params{"tableName": strings.ToLower(tableName)})).
 		Limit(1)
 
 	if len(excludeIds) > 0 {
@@ -177,6 +180,60 @@ func (dao *Dao) SaveCollection(collection *models.Collection) error {
 		// sync the changes with the related records table
 		return txDao.SyncRecordTableSchema(collection, oldCollection)
 	})
+}
+
+// create a new user collection for new project
+func (dao *Dao) CreateUserCollectionForProject(projectName string) error {
+	usersCollection := &models.Collection{}
+	usersCollection.MarkAsNew()
+	usersCollection.Id = "_" + projectName + "_users_auth_"
+	usersCollection.Name = "users"
+	usersCollection.ProjectName = projectName
+	usersCollection.ProjectTableName = projectName + "_users"
+	usersCollection.Type = models.CollectionTypeAuth
+	usersCollection.ListRule = types.Pointer("id = @request.auth.id")
+	usersCollection.ViewRule = types.Pointer("id = @request.auth.id")
+	usersCollection.CreateRule = types.Pointer("")
+	usersCollection.UpdateRule = types.Pointer("id = @request.auth.id")
+	usersCollection.DeleteRule = types.Pointer("id = @request.auth.id")
+
+	// set auth options
+	usersCollection.SetOptions(models.CollectionAuthOptions{
+		ManageRule:        nil,
+		AllowOAuth2Auth:   true,
+		AllowUsernameAuth: true,
+		AllowEmailAuth:    true,
+		MinPasswordLength: 8,
+		RequireEmail:      false,
+	})
+
+	// set optional default fields
+	usersCollection.Schema = schema.NewSchema(
+		&schema.SchemaField{
+			Id:      "users_name",
+			Type:    schema.FieldTypeText,
+			Name:    "name",
+			Options: &schema.TextOptions{},
+		},
+		&schema.SchemaField{
+			Id:   "users_avatar",
+			Type: schema.FieldTypeFile,
+			Name: "avatar",
+			Options: &schema.FileOptions{
+				MaxSelect: 1,
+				MaxSize:   5242880,
+				MimeTypes: []string{
+					"image/jpg",
+					"image/jpeg",
+					"image/png",
+					"image/svg+xml",
+					"image/gif",
+				},
+			},
+		},
+	)
+
+	return dao.SaveCollection(usersCollection);
 }
 
 // ImportCollections imports the provided collections list within a single transaction.

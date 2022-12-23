@@ -23,7 +23,8 @@ const (
 type Collection struct {
 	BaseModel
 	
-	ProjectName string `db:"projectName" json:"projectName"`
+	ProjectName string   `db:"projectName" json:"projectName"`
+	ProjectTableName   string   `db:"tableName" json:"tableName"`
 
 	Name   string        `db:"name" json:"name"`
 	Type   string        `db:"type" json:"type"`

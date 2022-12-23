@@ -25,18 +25,19 @@ type CollectionUpsert struct {
 	dao        *daos.Dao
 	collection *models.Collection
 
-	ProjectName string `form:"projectName" json:"projectName"`
-	Id         string        `form:"id" json:"id"`
-	Type       string        `form:"type" json:"type"`
-	Name       string        `form:"name" json:"name"`
-	System     bool          `form:"system" json:"system"`
-	Schema     schema.Schema `form:"schema" json:"schema"`
-	ListRule   *string       `form:"listRule" json:"listRule"`
-	ViewRule   *string       `form:"viewRule" json:"viewRule"`
-	CreateRule *string       `form:"createRule" json:"createRule"`
-	UpdateRule *string       `form:"updateRule" json:"updateRule"`
-	DeleteRule *string       `form:"deleteRule" json:"deleteRule"`
-	Options    types.JsonMap `form:"options" json:"options"`
+	ProjectName string 		  `form:"projectName" json:"projectName"`
+	ProjectTableName   string		  `form:"tableName" json:"tableName"`
+	Id          string        `form:"id" json:"id"`
+	Type        string        `form:"type" json:"type"`
+	Name        string        `form:"name" json:"name"`
+	System      bool          `form:"system" json:"system"`
+	Schema      schema.Schema `form:"schema" json:"schema"`
+	ListRule    *string       `form:"listRule" json:"listRule"`
+	ViewRule    *string       `form:"viewRule" json:"viewRule"`
+	CreateRule  *string       `form:"createRule" json:"createRule"`
+	UpdateRule  *string       `form:"updateRule" json:"updateRule"`
+	DeleteRule  *string       `form:"deleteRule" json:"deleteRule"`
+	Options     types.JsonMap `form:"options" json:"options"`
 }
 
 // NewCollectionUpsert creates a new [CollectionUpsert] form with initializer
@@ -145,7 +146,7 @@ func (form *CollectionUpsert) checkUniqueName(value any) error {
 	v, _ := value.(string)
 
 	// ensure unique collection name
-	if !form.dao.IsCollectionNameUnique(v, form.collection.Id) {
+	if !form.dao.IsCollectionNameUnique(v, form.ProjectName, form.collection.Id) {
 		return validation.NewError("validation_collection_name_exists", "Collection name must be unique (case insensitive).")
 	}
 
@@ -362,8 +363,12 @@ func (form *CollectionUpsert) Submit(interceptors ...InterceptorFunc) error {
 		// system flag can be set only on create
 		form.collection.System = form.System
 
-		// project name
+		// project name can be set only on create
 		form.collection.ProjectName = form.ProjectName
+
+		// project table name can be set only on create
+		names := []string{form.ProjectName, form.Name}
+		form.collection.ProjectTableName = strings.Join(names, "_")
 
 		// custom insertion id can be set only on create
 		if form.Id != "" {
