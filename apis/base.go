@@ -92,12 +92,12 @@ func InitApi(app core.App) (*echo.Echo, error) {
 	bindStaticAdminUI(app, e)
 	
 	// default routes
-	// api := e.Group("/api")
-	api := e.Group("/api/projects/:projectName");
-
+	api := e.Group("/api")
+	bindAdminApi(app, api)
 	bindProjectApi(app, api)
 	bindSettingsApi(app, api)
-	bindAdminApi(app, api)
+
+	api = e.Group("/api/projects/:projectName");
 	bindCollectionApi(app, api)
 	bindRecordCrudApi(app, api)
 	bindRecordAuthApi(app, api)
