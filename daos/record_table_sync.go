@@ -39,7 +39,7 @@ func (dao *Dao) SyncRecordTableSchema(newCollection *models.Collection, oldColle
 			newCollection.MarkAsNew()
 		}
 
-		tableName := newCollection.Name
+		tableName := newCollection.ProjectTableName
 
 		// add schema field definitions
 		for _, field := range newCollection.Schema.Fields() {
@@ -78,8 +78,8 @@ func (dao *Dao) SyncRecordTableSchema(newCollection *models.Collection, oldColle
 
 	// update
 	return dao.RunInTransaction(func(txDao *Dao) error {
-		oldTableName := oldCollection.Name
-		newTableName := newCollection.Name
+		oldTableName := oldCollection.ProjectTableName
+		newTableName := newCollection.ProjectTableName
 		oldSchema := oldCollection.Schema
 		newSchema := newCollection.Schema
 

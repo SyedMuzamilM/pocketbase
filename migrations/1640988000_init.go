@@ -6,11 +6,12 @@ import (
 	"runtime"
 
 	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase/daos"
-	"github.com/pocketbase/pocketbase/models"
-	"github.com/pocketbase/pocketbase/models/schema"
+	// "github.com/pocketbase/pocketbase/daos"
+	// "github.com/pocketbase/pocketbase/models"
+
+	// "github.com/pocketbase/pocketbase/models/schema"
 	"github.com/pocketbase/pocketbase/tools/migrate"
-	"github.com/pocketbase/pocketbase/tools/types"
+	// "github.com/pocketbase/pocketbase/tools/types"
 )
 
 var AppMigrations migrate.MigrationsList
@@ -58,7 +59,8 @@ func init() {
 				[[system]]      BOOLEAN DEFAULT FALSE NOT NULL,
 				[[type]]        TEXT DEFAULT "base" NOT NULL,
 				[[projectName]] TEXT NOT NULL,
-				[[name]]        TEXT UNIQUE NOT NULL,
+				[[tableName]]	TEXT UNIQUE NOT NULL,
+				[[name]]        TEXT NOT NULL,
 				[[schema]]      JSON DEFAULT "[]" NOT NULL,
 				[[listRule]]    TEXT DEFAULT NULL,
 				[[viewRule]]    TEXT DEFAULT NULL,
@@ -90,6 +92,7 @@ func init() {
 				FOREIGN KEY ([[collectionId]]) REFERENCES {{_collections}} ([[id]]) ON UPDATE CASCADE ON DELETE CASCADE
 			);
 
+			CREATE UNIQUE INDEX _collections_tableName_index on {{_collections}} ([[name]], [[projectName]]);
 			CREATE UNIQUE INDEX _externalAuths_record_provider_idx on {{_externalAuths}} ([[collectionId]], [[recordId]], [[provider]]);
 			CREATE UNIQUE INDEX _externalAuths_provider_providerId_idx on {{_externalAuths}} ([[provider]], [[providerId]]);
 		`).Execute()
@@ -97,59 +100,70 @@ func init() {
 			return tablesErr
 		}
 
-		// inserts the system profiles collection
-		// -----------------------------------------------------------
-		usersCollection := &models.Collection{}
-		usersCollection.MarkAsNew()
-		usersCollection.Id = "_pb_users_auth_"
-		usersCollection.Name = "users"
-		usersCollection.Type = models.CollectionTypeAuth
-		usersCollection.ListRule = types.Pointer("id = @request.auth.id")
-		usersCollection.ViewRule = types.Pointer("id = @request.auth.id")
-		usersCollection.CreateRule = types.Pointer("")
-		usersCollection.UpdateRule = types.Pointer("id = @request.auth.id")
-		usersCollection.DeleteRule = types.Pointer("id = @request.auth.id")
+		// inserts the test project 
+		// testProject := &models.Project{}
+		// testProject.MarkAsNew()
+		// testProject.Id = "_pb_test_project_"
+		// testProject.Name = "test"
 
-		// set auth options
-		usersCollection.SetOptions(models.CollectionAuthOptions{
-			ManageRule:        nil,
-			AllowOAuth2Auth:   true,
-			AllowUsernameAuth: true,
-			AllowEmailAuth:    true,
-			MinPasswordLength: 8,
-			RequireEmail:      false,
-		})
+		// daos.New(db).SaveProject(testProject)
 
-		// set optional default fields
-		usersCollection.Schema = schema.NewSchema(
-			&schema.SchemaField{
-				Id:      "users_name",
-				Type:    schema.FieldTypeText,
-				Name:    "name",
-				Options: &schema.TextOptions{},
-			},
-			&schema.SchemaField{
-				Id:   "users_avatar",
-				Type: schema.FieldTypeFile,
-				Name: "avatar",
-				Options: &schema.FileOptions{
-					MaxSelect: 1,
-					MaxSize:   5242880,
-					MimeTypes: []string{
-						"image/jpg",
-						"image/jpeg",
-						"image/png",
-						"image/svg+xml",
-						"image/gif",
-					},
-				},
-			},
-		)
+		// // inserts the system profiles collection
+		// // -----------------------------------------------------------
+		// usersCollection := &models.Collection{}
+		// usersCollection.MarkAsNew()
+		// usersCollection.Id = "_pb_users_auth_"
+		// usersCollection.Name = "users"
+		// usersCollection.ProjectName = "test"
+		// usersCollection.ProjectTableName = "test_users"
+		// usersCollection.Type = models.CollectionTypeAuth
+		// usersCollection.ListRule = types.Pointer("id = @request.auth.id")
+		// usersCollection.ViewRule = types.Pointer("id = @request.auth.id")
+		// usersCollection.CreateRule = types.Pointer("")
+		// usersCollection.UpdateRule = types.Pointer("id = @request.auth.id")
+		// usersCollection.DeleteRule = types.Pointer("id = @request.auth.id")
 
-		return daos.New(db).SaveCollection(usersCollection)
+		// // set auth options
+		// usersCollection.SetOptions(models.CollectionAuthOptions{
+		// 	ManageRule:        nil,
+		// 	AllowOAuth2Auth:   true,
+		// 	AllowUsernameAuth: true,
+		// 	AllowEmailAuth:    true,
+		// 	MinPasswordLength: 8,
+		// 	RequireEmail:      false,
+		// })
+
+		// // set optional default fields
+		// usersCollection.Schema = schema.NewSchema(
+		// 	&schema.SchemaField{
+		// 		Id:      "users_name",
+		// 		Type:    schema.FieldTypeText,
+		// 		Name:    "name",
+		// 		Options: &schema.TextOptions{},
+		// 	},
+		// 	&schema.SchemaField{
+		// 		Id:   "users_avatar",
+		// 		Type: schema.FieldTypeFile,
+		// 		Name: "avatar",
+		// 		Options: &schema.FileOptions{
+		// 			MaxSelect: 1,
+		// 			MaxSize:   5242880,
+		// 			MimeTypes: []string{
+		// 				"image/jpg",
+		// 				"image/jpeg",
+		// 				"image/png",
+		// 				"image/svg+xml",
+		// 				"image/gif",
+		// 			},
+		// 		},
+		// 	},
+		// )
+
+		// return daos.New(db).SaveCollection(usersCollection)
+		return nil
 	}, func(db dbx.Builder) error {
 		tables := []string{
-			"users",
+			"projects",
 			"_externalAuths",
 			"_params",
 			"_collections",
