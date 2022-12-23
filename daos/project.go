@@ -32,5 +32,11 @@ func (dao *Dao) FindProjectByNameOrId(nameOrId string) (*models.Project, error) 
 }
 
 func (dao *Dao) SaveProject(project *models.Project) error {
-	return dao.Save(project)
+	// Also create a new user collection (system) for that project
+	return dao.RunInTransaction(func(txDao *Dao) error {
+		if err := txDao.Save(project); err != nil {
+			return err
+		}
+		return txDao.CreateUserCollectionForProject(project.Name)
+	})
 }
