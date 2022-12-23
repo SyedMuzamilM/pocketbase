@@ -59,6 +59,8 @@ func (api *projectApi) create(c echo.Context) error {
 		return NewBadRequestError("Failed to load the submitted data due to invalid formatiing", err)
 	}
 
+	print(form.Name)
+
 	event := &core.ProjectCreateEvent{
 		HttpContext: c,
 		Project:  project,
