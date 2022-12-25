@@ -41,13 +41,6 @@ type Collection struct {
 	Options types.JsonMap `db:"options" json:"options"`
 }
 
-// func NewCollection(m *Collection) *Collection {
-// 	return &Collection{
-// 		project: m.project,
-// 		Name: m.Name,
-// 	}
-// }
-
 // TableName returns the Collection model SQL table name.
 func (m *Collection) TableName() string {
 	return "_collections"

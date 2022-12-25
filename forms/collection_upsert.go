@@ -132,6 +132,7 @@ func (form *CollectionUpsert) Validate() error {
 			&form.ProjectName,
 			validation.NotNil,
 			validation.Required,
+			// validation.By(form.checkProjectExists),
 		),
 		validation.Field(&form.ListRule, validation.By(form.checkRule)),
 		validation.Field(&form.ViewRule, validation.By(form.checkRule)),
@@ -340,6 +341,16 @@ func (form *CollectionUpsert) checkOptions(value any) error {
 		if err := form.checkRule(options.ManageRule); err != nil {
 			return validation.Errors{"manageRule": err}
 		}
+	}
+
+	return nil
+}
+
+func (form *CollectionUpsert) checkProjectExists(value any) error {
+	v, _ := value.(string)
+
+	if form.dao.FindProjectByName(&models.Project{}, v) == nil {
+		return validation.NewError("validation_project_does_not_exist", "Project does not exist.")
 	}
 
 	return nil
