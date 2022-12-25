@@ -36,6 +36,11 @@ func (api *collectionApi) list(c echo.Context) error {
 
 	projectName := c.PathParam("projectName")
 
+	project, _ :=  api.app.Dao().FindProjectByNameOrId(projectName)
+	if project == nil {
+		return NewNotFoundError("No Project found", nil)
+	}
+
 	result, err := search.NewProvider(fieldResolver).
 		Query(api.app.Dao().FindCollectionByProject(projectName)).
 		ParseAndExec(c.QueryParams().Encode(), &collections)
