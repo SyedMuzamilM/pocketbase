@@ -18,7 +18,7 @@ import (
 
 // RecordQuery returns a new Record select query.
 func (dao *Dao) RecordQuery(collection *models.Collection) *dbx.SelectQuery {
-	tableName := collection.Name
+	tableName := collection.ProjectTableName
 	selectCols := fmt.Sprintf("%s.*", dao.DB().QuoteSimpleColumnName(tableName))
 
 	return dao.DB().Select(selectCols).From(tableName)
@@ -35,7 +35,7 @@ func (dao *Dao) FindRecordById(
 		return nil, err
 	}
 
-	tableName := collection.Name
+	tableName := collection.ProjectTableName
 
 	query := dao.RecordQuery(collection).
 		AndWhere(dbx.HashExp{tableName + ".id": recordId})
@@ -71,7 +71,7 @@ func (dao *Dao) FindRecordsByIds(
 
 	query := dao.RecordQuery(collection).
 		AndWhere(dbx.In(
-			collection.Name+".id",
+			collection.ProjectTableName+".id",
 			list.ToInterfaceSlice(recordIds)...,
 		))
 
@@ -194,7 +194,7 @@ func (dao *Dao) IsRecordValueUnique(
 
 	if len(excludeIds) > 0 {
 		uniqueExcludeIds := list.NonzeroUniques(excludeIds)
-		query.AndWhere(dbx.NotIn(collection.Name+".id", list.ToInterfaceSlice(uniqueExcludeIds)...))
+		query.AndWhere(dbx.NotIn(collection.ProjectTableName+".id", list.ToInterfaceSlice(uniqueExcludeIds)...))
 	}
 
 	var exists bool
@@ -399,7 +399,7 @@ func (dao *Dao) cascadeRecordDelete(mainRecord *models.Record, refs map[*models.
 
 	for refCollection, fields := range refs {
 		for _, field := range fields {
-			recordTableName := inflector.Columnify(refCollection.Name)
+			recordTableName := inflector.Columnify(refCollection.ProjectTableName)
 			prefixedFieldName := recordTableName + "." + inflector.Columnify(field.Name)
 			query := dao.RecordQuery(refCollection).
 				Distinct(true).
