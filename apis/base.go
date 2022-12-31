@@ -96,15 +96,15 @@ func InitApi(app core.App) (*echo.Echo, error) {
 	bindAdminApi(app, api)
 	bindProjectApi(app, api)
 	bindSettingsApi(app, api)
+	bindLogsApi(app, api)
+	bindFileApi(app, api)
+	bindRealtimeApi(app, api)
+	bindHealthApi(app, api)
 
 	api = e.Group("/api/projects/:projectName");
 	bindCollectionApi(app, api)
 	bindRecordCrudApi(app, api)
 	bindRecordAuthApi(app, api)
-	bindFileApi(app, api)
-	bindRealtimeApi(app, api)
-	bindLogsApi(app, api)
-	bindHealthApi(app, api)
 
 	// trigger the custom BeforeServe hook for the created api router
 	// allowing users to further adjust its options or register new routes

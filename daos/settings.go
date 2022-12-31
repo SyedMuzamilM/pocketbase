@@ -16,13 +16,13 @@ import (
 // decrypting the value and then decode it again.
 //
 // Returns an error if it fails to decode the stored serialized param value.
-func (dao *Dao) FindSettings(optEncryptionKey ...string) (*settings.Settings, error) {
+func (dao *Dao) FindSettingsByProject(projectName string, optEncryptionKey ...string) (*settings.Settings, error) {
 	param, err := dao.FindParamByKey(models.ParamAppSettings)
 	if err != nil {
 		return nil, err
 	}
 
-	result := settings.New()
+	result := settings.New(projectName)
 
 	// try first without decryption
 	plainDecodeErr := json.Unmarshal(param.Value, result)

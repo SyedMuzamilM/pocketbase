@@ -76,7 +76,7 @@ type App interface {
 	NewFilesystem() (*filesystem.System, error)
 
 	// RefreshSettings reinitializes and reloads the stored application settings.
-	RefreshSettings() error
+	// RefreshSettings() error
 
 	// IsBootstrapped checks if the application was initialized
 	// (aka. whether Bootstrap() was called).

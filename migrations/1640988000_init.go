@@ -163,7 +163,7 @@ func init() {
 		return nil
 	}, func(db dbx.Builder) error {
 		tables := []string{
-			"projects",
+			"_projects",
 			"_externalAuths",
 			"_params",
 			"_collections",

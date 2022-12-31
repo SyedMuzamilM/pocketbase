@@ -171,7 +171,7 @@ func NewBaseApp(config *BaseAppConfig) *BaseApp {
 		logsMaxOpenConns:    config.LogsMaxOpenConns,
 		logsMaxIdleConns:    config.LogsMaxIdleConns,
 		cache:               store.New[any](nil),
-		settings:            settings.New(),
+		// settings:            settings.New(),
 		subscriptionsBroker: subscriptions.NewBroker(),
 
 		// app event hooks
@@ -313,7 +313,7 @@ func (app *BaseApp) Bootstrap() error {
 	}
 
 	// we don't check for an error because the db migrations may have not been executed yet
-	app.RefreshSettings()
+	// app.RefreshSettings()
 
 	if err := app.OnAfterBootstrap().Trigger(event); err != nil && app.IsDebug() {
 		log.Println(err)
@@ -469,30 +469,30 @@ func (app *BaseApp) NewFilesystem() (*filesystem.System, error) {
 }
 
 // RefreshSettings reinitializes and reloads the stored application settings.
-func (app *BaseApp) RefreshSettings() error {
-	if app.settings == nil {
-		app.settings = settings.New()
-	}
+// func (app *BaseApp) RefreshSettings() error {
+// 	if app.settings == nil {
+// 		app.settings = settings.New()
+// 	}
 
-	encryptionKey := os.Getenv(app.EncryptionEnv())
+// 	encryptionKey := os.Getenv(app.EncryptionEnv())
 
-	storedSettings, err := app.Dao().FindSettings(encryptionKey)
-	if err != nil && err != sql.ErrNoRows {
-		return err
-	}
+// 	storedSettings, err := app.Dao().FindSettings(encryptionKey)
+// 	if err != nil && err != sql.ErrNoRows {
+// 		return err
+// 	}
 
-	// no settings were previously stored
-	if storedSettings == nil {
-		return app.Dao().SaveSettings(app.settings, encryptionKey)
-	}
+// 	// no settings were previously stored
+// 	if storedSettings == nil {
+// 		return app.Dao().SaveSettings(app.settings, encryptionKey)
+// 	}
 
-	// load the settings from the stored param into the app ones
-	if err := app.settings.Merge(storedSettings); err != nil {
-		return err
-	}
+// 	// load the settings from the stored param into the app ones
+// 	if err := app.settings.Merge(storedSettings); err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // -------------------------------------------------------------------
 // App event hooks

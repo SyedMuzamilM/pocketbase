@@ -19,6 +19,8 @@ import (
 type Settings struct {
 	mux sync.RWMutex
 
+	ProjectName  string `form:"projectName" json:"projectName"`
+
 	Meta MetaConfig `form:"meta" json:"meta"`
 	Logs LogsConfig `form:"logs" json:"logs"`
 	Smtp SmtpConfig `form:"smtp" json:"smtp"`
@@ -47,10 +49,11 @@ type Settings struct {
 }
 
 // New creates and returns a new default Settings instance.
-func New() *Settings {
+func New(projectName string) *Settings {
 	return &Settings{
+		ProjectName: projectName,
 		Meta: MetaConfig{
-			AppName:                    "Acme",
+			AppName:                    projectName,
 			AppUrl:                     "http://localhost:8090",
 			HideControls:               false,
 			SenderName:                 "Support",

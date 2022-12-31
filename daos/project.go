@@ -5,6 +5,7 @@ import (
 
 	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/models"
+	"github.com/pocketbase/pocketbase/models/settings"
 	"github.com/pocketbase/pocketbase/tools/list"
 )
 
@@ -88,6 +89,14 @@ func (dao *Dao) SaveProject(project *models.Project) error {
 		if err := txDao.Save(project); err != nil {
 			return err
 		}
+
+		settings := settings.New(project.Name);
+
+		// Need the project name or id
+		if err := dao.SaveSettings(settings); err != nil {
+			return err
+		}
+
 		return txDao.CreateUserCollectionForProject(project.Name)
 	})
 }
